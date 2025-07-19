@@ -86,5 +86,6 @@ MICROSERVICIO INVENTARIOS
   nota: producto/id modificar id por el numero del producto y la variable nuevaCantidad=x, x por el numero de cantidad que quiere modificar
 
   NOTA: LO PUEDE HACER DESDE POSTMAN O DESDE EL NAVEGADOR
+  LEER: en la carpeta README de este repositorio se encuentra la documentación con diagrama de arquitectura y ejemplos en postman con sus respectivos endpoints
   RECOMENDACION: DESDE POSTMAN PUEDE EJECUTAR MEJOR LOS PUT con el body/raw formato en JSON aplica para editar de producto pero para actualizar la cantidad no es necesirio note que puede hacerlo enviando la variable nuevaCantidad=x
         
