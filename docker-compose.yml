@@ -1,0 +1,90 @@
+version: "3.9"
+
+services:
+
+  mysql-db:
+    image: mysql:8
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: db_linktic
+    ports:
+      - "3307:3306"   # Puerto 3307 en host para evitar conflicto si tienes MySQL local
+    volumes:
+      - mysql-data:/var/lib/mysql        # Persistencia de datos
+      - ./mysql-init:/docker-entrypoint-initdb.d  # Scripts SQL para inicializar la BD
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - red-microservicios
+    restart: unless-stopped
+
+  eureka:
+    build:
+      context: ./microservicio-eureka
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - red-microservicios
+
+  productos:
+    build:
+      context: ./microservicio-productos
+    container_name: ms-productos
+    ports:
+      - "8081:8081"
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    environment:
+      - PORT=8081
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+    networks:
+      - red-microservicios
+
+  inventarios:
+    build:
+      context: ./microservicio-inventarios
+    container_name: ms-inventarios
+    ports:
+      - "8082:8082"
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      productos:
+        condition: service_started
+      eureka:
+        condition: service_started
+    environment:
+      - PORT=8082
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SERVICIO_PRODUCTOS_URL=http://ms-productos:8081
+    networks:
+      - red-microservicios
+
+  gateway:
+    build:
+      context: ./microservicio-gateway
+    container_name: api-gateway
+    ports:
+      - "8090:8090"
+    depends_on:
+      - eureka
+    environment:
+      - PORT=8090
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+    networks:
+      - red-microservicios
+
+volumes:
+  mysql-data:
+
+networks:
+  red-microservicios:
+    driver: bridge

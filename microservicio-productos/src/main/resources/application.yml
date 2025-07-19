@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: microservicio-productos
+
+  datasource:
+    url: jdbc:mysql://mysql-db:3306/db_linktic
+    username: root
+    password: admin123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update  # Asegura que cree tablas si no existen
+
+server:
+  port: ${PORT:0}
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug

@@ -1,0 +1,33 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: microservicio-gateway
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        # Ruta para productos
+        - id: productos-swagger
+          uri: lb://microservicio-productos
+          predicates:
+            - Path=/Swagger/OpenAPI/productos/**
+          filters:
+            - StripPrefix=3
+
+        # Ruta para inventarios
+        - id: inventarios-swagger
+          uri: lb://microservicio-inventarios
+          predicates:
+            - Path=/Swagger/OpenAPI/inventarios/**
+          filters:
+            - StripPrefix=3
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka
