@@ -5,6 +5,7 @@ Instalar Git
 
 Instalar Docker Desktop
   https://www.docker.com/products/docker-desktop/
+Para windows instale DOCKER AMD64
 Asegúrate de que Docker esté corriendo.
 
 Ingresar al repositorio mio
